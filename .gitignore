@@ -1,4 +1,6 @@
 secret_config.py
+vagrant/.vagrant
+src/data.txt
 
 
 # Byte-compiled / optimized / DLL files

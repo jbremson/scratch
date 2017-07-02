@@ -1,7 +1,6 @@
-import config
-import secret_config
 import googlemaps
-from threading import Thread
+
+from src import config, secret_config
 
 client = googlemaps.Client(key=secret_config.KEY)
 
@@ -22,8 +21,8 @@ def combinations(list):
 
 def get_estimate(city_list):
     response = client.directions(city_list[0], city_list[1], departure_time='now')
-    print("{} - {}".format(city_list, get_duration(response)))
+    return get_duration(response)
 
 for pair in combinations(config.cities):
-    thread = Thread(target=get_estimate, args=(pair,))
-    thread.start()
+    print(pair)
+    print(get_estimate(pair))
