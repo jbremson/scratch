@@ -1,0 +1,10 @@
+---
+- name: Test ping on localhost
+
+  hosts: localtest
+  connection: local
+
+  tasks:
+
+  - name: Ping!
+    ping
