@@ -9,6 +9,7 @@
           3965323634353330370a316161346631646665346134613865346635353863313463656233393638
           3231
 
+
   tasks:
   - name: Install MySQL
     apt: name={{ item }} update_cache=yes cache_valid_time=3600 state=present
@@ -47,5 +48,16 @@
       login_user: root
       login_password: "{{ mysql_root_password }}"
       name: commute
-      state: import
+      state: present
       target: /tmp/base.sql
+  - name: rm base.sql
+    command: rm /tmp/base.sql
+  - name: Install list of packages
+    apt: name="{{item}}" state=installed
+    with_items:
+       - python3
+       - python3-pip
+       - cython
+  - name: Install python3 packages
+    command: pip3 install peewee pymysql
+
