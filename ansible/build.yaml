@@ -78,7 +78,11 @@
   - git:
       repo: https://github.com/jbremson/scratch.git
       dest: /home/vagrant/scratch
+  - name: copy special config data
+    template: src=../src/secret_config.py dest=/home/vagrant/scratch/src
   - name: Install libs to venv
-    command: /home/vagrant/venvs/commute_venv/bin/python3 /home/vagrant/scratch/setup.py install
+    command: /home/vagrant/venvs/commute_venv/bin/python3 setup.py install
+    args:
+      chdir: /home/vagrant/scratch
 
 
