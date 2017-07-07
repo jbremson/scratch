@@ -45,7 +45,7 @@ class Cities(BaseCommute):
                         pass
 
 class DummyExecutor(Executor):
-
+    """For debugging access to the program flow."""
     def __init__(self, *args, **kwargs):
         self._shutdown = False
         self._shutdownLock = Lock()
@@ -79,19 +79,22 @@ class Trips(BaseCommute):
 
 
     @staticmethod
-    def estimate(city_pair):
+    def estimate(city_pair, no_write):
         name_to_id = dict()
         response = client.directions(city_pair[0], city_pair[1], departure_time='now')
         out = response[0]['legs'][0]['duration_in_traffic']
-        o = Trips(origin=Cities.get(Cities.name==city_pair[0]).id,
-              destination=Cities.get(Cities.name==city_pair[1]).id,
-              time=out['value'], text_time=out['text'])
-        o.save()
-        print(out)
+        if no_write:
+            # have this log
+            print(out)
+        else:
+            o = Trips(origin=Cities.get(Cities.name==city_pair[0]).id,
+                    destination=Cities.get(Cities.name==city_pair[1]).id,
+                time=out['value'], text_time=out['text'])
+            o.save()
 
 
     @classmethod
-    def process_trips(cls, debug=False):
+    def process_trips(cls, debug=False, no_write=False):
         regions_list = Cities.select(Cities.region).distinct()
         Exec = DummyExecutor if debug else ThreadPoolExecutor
         for region in regions_list:
@@ -99,7 +102,7 @@ class Trips(BaseCommute):
                 continue
             city_list = [a.name for a in Cities.select(Cities.name).where(Cities.region == region.region)]
             with Exec(max_workers=20) as executor:
-                future_to_trip_time = {executor.submit(cls.estimate, pair): pair for pair in
+                future_to_trip_time = {executor.submit(cls.estimate, pair, no_write): pair for pair in
                                        combinations(city_list)}
 
 

@@ -15,9 +15,7 @@
           32323764363932343636306434323334343838653566636438363832383037613164306439323731
           6439326139363733360a373237643037393739643733306663313635316535363362323832643762
           6537
-
-
-
+    base_dir: /home/vagrant
   tasks:
   - name: Install MySQL
     apt: name={{ item }} update_cache=yes cache_valid_time=3600 state=present
@@ -77,21 +75,21 @@
   - name: Install virtualenv
     command: pip3 install virtualenv
   - name: Create virtualenv
-    command: virtualenv /home/vagrant/venvs/commute_venv -p python3.4 creates="/home/vagrant/venvs/commute_venv"
+    command: virtualenv {{ base_dir }}/venvs/commute_venv -p python3.4 creates="{{ base_dir }}/venvs/commute_venv"
   - name: copy requirements
     template: src=../requirements.txt dest=/tmp/requirements.txt
   - pip:
       requirements: /tmp/requirements.txt
-      virtualenv: /home/vagrant/venvs/commute_venv
+      virtualenv: "{{ base_dir }}/venvs/commute_venv"
   - git:
       repo: https://github.com/jbremson/scratch.git
-      dest: /home/vagrant/scratch
+      dest: "{{ base_dir }}/scratch"
   - name: copy special config data
-    template: src=../src/secret_config.py dest=/home/vagrant/scratch/src
+    template: src=../src/secret_config.py dest={{ base_dir }}/scratch/src
   - name: Install libs to venv
-    command: /home/vagrant/venvs/commute_venv/bin/python3 setup.py install
+    command: "{{ base_dir }}/venvs/commute_venv/bin/python3 setup.py install"
     args:
-      chdir: /home/vagrant/scratch
+      chdir: "{{ base_dir }}/scratch"
   - mysql_user:
       name: commuter
       config_file: ~/.my.cnf

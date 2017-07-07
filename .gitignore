@@ -2,6 +2,11 @@ secret_config.py
 vagrant/.vagrant
 src/data.txt
 
+.DS_Store
+.idea/
+build.retry
+auth
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
