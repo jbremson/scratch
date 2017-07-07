@@ -24,6 +24,7 @@
     - python-mysqldb
     - mysql-server
     - git
+    - mytop
   #- name: copy cnf
   #  copy: src=.my.cnf dest=~/.my.cnf owner=ubuntu mode=0644
   #  sudo: yes
