@@ -50,6 +50,13 @@
       name: commute
       state: present
       target: /tmp/base.sql
+  - name: create test db
+    mysql_db:
+      login_user: root
+      login_password: "{{ mysql_root_password }}"
+      name: test_commute
+      state: import
+      target: /tmp/base.sql
   - name: rm base.sql
     command: rm /tmp/base.sql
   - name: Install list of packages
