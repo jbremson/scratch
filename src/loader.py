@@ -7,7 +7,7 @@ from src import config, secret_config
 from threading import Lock
 
 
-db = MySQLDatabase("commute", user="root", host="127.0.0.1", port=3306, password=secret_config.dbpassword)
+db = MySQLDatabase("commute", user="commuter", host="127.0.0.1", port=3306, password=secret_config.commuter_password)
 client = googlemaps.Client(key=secret_config.KEY)
 
 
