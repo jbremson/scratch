@@ -15,12 +15,19 @@
           32323764363932343636306434323334343838653566636438363832383037613164306439323731
           6439326139363733360a373237643037393739643733306663313635316535363362323832643762
           6537
-    base_dir: /home/vagrant
+    base_dir: /home/commuter
+
+
+
   tasks:
+  - name: install python 2
+    raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
   - name: Install MySQL
     apt: name={{ item }} update_cache=yes cache_valid_time=3600 state=present
     sudo: yes
     with_items:
+    - libmysqlclient-dev
+    - python
     - python-mysqldb
     - mysql-server
     - git
@@ -34,6 +41,16 @@
       name: mysql
       state: started
       enabled: true
+  # tasks file for mysql
+  - name: Install list of packages
+    apt: name="{{item}}" state=installed
+    with_items:
+       - python-pip
+       - python3
+       - python3-pip
+       - cython
+  - name: Install the Python MySQLB module
+    pip: name=MySQL-python
   - name: update mysql root password for all root accounts
     sudo: yes
     mysql_user:
@@ -67,16 +84,11 @@
       target: /tmp/base.sql
   - name: rm base.sql
     command: rm /tmp/base.sql
-  - name: Install list of packages
-    apt: name="{{item}}" state=installed
-    with_items:
-       - python3
-       - python3-pip
-       - cython
+
   - name: Install virtualenv
     command: pip3 install virtualenv
   - name: Create virtualenv
-    command: virtualenv {{ base_dir }}/venvs/commute_venv -p python3.4 creates="{{ base_dir }}/venvs/commute_venv"
+    command: virtualenv {{ base_dir }}/venvs/commute_venv -p python3.5 creates="{{ base_dir }}/venvs/commute_venv"
   - name: copy requirements
     template: src=../requirements.txt dest=/tmp/requirements.txt
   - pip:
@@ -92,10 +104,12 @@
     args:
       chdir: "{{ base_dir }}/scratch"
   - mysql_user:
+      login_user: root
+      login_password: "{{ mysql_root_password }}"
       name: commuter
-      config_file: ~/.my.cnf
       password: "{{ commuter_password }}"
       priv: "commute.*:SELECT,INSERT,UPDATE,DELETE"
+      state: present
   - cron:
       name: run scraper
       minute: "0"
